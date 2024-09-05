@@ -17,6 +17,8 @@ $connections[] = $sock;
 $lines = [];
 $current_line = [];
 
+
+$asdasd = "asdasd";
 $current_word = ''; // Palavra atual
 $current_dica = null; // Palavra atual
 $current_dica_word = null;
