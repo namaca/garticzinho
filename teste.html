@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Picker</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        #showCardButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        #showCardButton:hover {
+            background-color: #0056b3;
+        }
+
+        .color-card {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            z-index: 1000;
+            text-align: center;
+            width: 400px;
+        }
+
+        .color-card.hidden {
+            display: none;
+        }
+
+        #colorCanvas {
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            cursor: crosshair;
+        }
+
+        .color-display {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+
+        #colorInfo {
+            margin-top: 10px;
+        }
+
+        .color-buttons {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .color-button {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            margin: 5px;
+            outline: none;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .close-button:hover {
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <button id="showCardButton">Mostrar Seletor de Cores</button>
+
+    <div id="colorCard" class="color-card hidden">
+        <button id="closeCardButton" class="close-button">×</button>
+        <div class="color-picker">
+            <canvas id="colorCanvas" width="300" height="300"></canvas>
+            <div id="colorDisplay" class="color-display"></div>
+            <div id="colorInfo">Cor: <span id="colorCode">#ffffff</span></div>
+            <div class="color-buttons">
+                <button id="blackButton" class="color-button" style="background-color: #000000;"></button>
+                <button id="whiteButton" class="color-button" style="background-color: #ffffff;"></button>
+                <button id="redButton" class="color-button" style="background-color: #ff0000;"></button>
+                <button id="greenButton" class="color-button" style="background-color: #00ff00;"></button>
+                <button id="blueButton" class="color-button" style="background-color: #0000ff;"></button>
+                <button id="yellowButton" class="color-button" style="background-color: #ffff00;"></button>
+                <button id="cyanButton" class="color-button" style="background-color: #00ffff;"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('colorCanvas');
+            const ctx = canvas.getContext('2d');
+            const colorDisplay = document.getElementById('colorDisplay');
+            const colorCode = document.getElementById('colorCode');
+            const colorCard = document.getElementById('colorCard');
+            const showCardButton = document.getElementById('showCardButton');
+            const closeCardButton = document.getElementById('closeCardButton');
+            
+            const radius = canvas.width / 2;
+            const center = { x: radius, y: radius };
+
+            function drawColorWheel() {
+                const gradient = ctx.createConicGradient(0, center.x, center.y);
+                for (let i = 0; i <= 360; i++) {
+                    gradient.addColorStop(i / 360, `hsl(${i}, 100%, 50%)`);
+                }
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(center.x, center.y, radius, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+
+            function getColorAtPosition(x, y) {
+                const imageData = ctx.getImageData(x, y, 1, 1).data;
+                return `rgb(${imageData[0]}, ${imageData[1]}, ${imageData[2]})`;
+            }
+
+            function setColor(color) {
+                colorDisplay.style.backgroundColor = color;
+                colorCode.textContent = color;
+            }
+
+            canvas.addEventListener('click', (event) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+
+                const color = getColorAtPosition(x, y);
+                setColor(color);
+            });
+
+            document.getElementById('blackButton').addEventListener('click', () => {
+                setColor('#000000');
+            });
+
+            document.getElementById('whiteButton').addEventListener('click', () => {
+                setColor('#ffffff');
+            });
+
+            document.getElementById('redButton').addEventListener('click', () => {
+                setColor('#ff0000');
+            });
+
+            document.getElementById('greenButton').addEventListener('click', () => {
+                setColor('#00ff00');
+            });
+
+            document.getElementById('blueButton').addEventListener('click', () => {
+                setColor('#0000ff');
+            });
+
+            document.getElementById('yellowButton').addEventListener('click', () => {
+                setColor('#ffff00');
+            });
+
+            document.getElementById('cyanButton').addEventListener('click', () => {
+                setColor('#00ffff');
+            });
+
+            showCardButton.addEventListener('click', () => {
+                colorCard.classList.remove('hidden');
+            });
+
+            closeCardButton.addEventListener('click', () => {
+                colorCard.classList.add('hidden');
+            });
+
+            drawColorWheel();
+        });
+    </script>
+</body>
+</html>
